@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <!-- 添加 viewport 元标签 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>南汇中学乐创机器人社</title>
+    <!-- 引入 particles.js -->
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    <link rel="icon" href="{{ url_for('static', filename='logo.ico') }}" type="image/x-icon">
+
+    <!-- 内联样式 -->
+    <style>
+        /* 全局样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            font-size: 18px;
+        }
+
+        body {
+            background: #0a192f;
+            color: #ccd6f6;
+            font-family: 'Microsoft YaHei', sans-serif;
+            line-height: 1.8;
+            position: relative;
+            min-height: 100vh;
+            padding-bottom: 100px; /* 确保内容不被footer遮挡 */
+        }
+
+        a {
+            color: #64ffda;
+            text-decoration: none;
+            transition: color 0.3s, background-color 0.3s;
+        }
+
+        a:hover {
+            color: #0a192f;
+            background-color: #64ffda;
+            border-radius: 5px;
+            padding: 2px 5px;
+        }
+
+        a.active {
+            background-color: #64ffda;
+            color: #0a192f;
+            border-radius: 5px;
+            padding: 2px 5px;
+        }
+
+        #particles-js {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            z-index: -1; /* 修改 z-index 为 -1 */
+        }
+
+        .container {
+            position: relative;
+            z-index: 2;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* 导航栏样式 */
+        nav {
+            background: rgba(10, 25, 47, 0.95);
+            padding: 10px 20px;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 3;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(100, 255, 218, 0.1);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo img {
+            width: 50px;
+            height: 50px;
+        }
+
+        .logo span {
+            font-size: 1.5rem;
+            color: #64ffda;
+        }
+
+        .nav-toggle {
+            display: none;
+            cursor: pointer;
+            padding: 10px;
+            z-index: 4;
+        }
+
+        .nav-toggle span {
+            display: block;
+            width: 25px;
+            height: 3px;
+            background-color: #64ffda;
+            margin: 5px 0;
+            transition: 0.4s;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-links a {
+            font-size: 1.125rem;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            background-color: #64ffda;
+            color: #0a192f;
+        }
+
+        /* 内容部分 */
+        #content {
+            padding: 100px 20px 60px 20px;
+            min-height: 60vh;
+            padding-top: 70px; /* 确保内容不被导航栏遮挡 */
+        }
+
+        /* 页脚部分 */
+        footer {
+            text-align: center;
+            padding: 40px 0;
+            background: rgba(10, 25, 47, 0.95);
+            margin-top: 40px;
+            position: relative;
+            z-index: 2; /* 确保footer位于particles-js之上 */
+        }
+
+        .contact-info {
+            margin-top: 20px;
+            color: #8892b0;
+        }
+
+        .contact-info p {
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+
+        /* 动画效果 */
+        .fade-out {
+            animation: fadeOut 0.5s forwards;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s forwards;
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+            }
+            to {
+                opacity: 0;
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* 调整标题和段落字体大小 */
+        h1 {
+            font-size: 2.5rem;
+            color: #fff;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            font-size: 2rem;
+            color: #fff;
+            margin-bottom: 15px;
+        }
+
+        p {
+            font-size: 1.125rem;
+            color: #8892b0;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+
+        /* 图片容器样式 */
+        .image-container {
+            width: 100%;
+            max-width: 800px;
+            margin: 20px auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .image-wrapper {
+            position: relative;
+            width: 100%;
+            height: 400px; /* 您可以根据需要调整高度 */
+            overflow: hidden;
+        }
+
+        .fade-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: contain; /* 确保图片按原比例缩放 */
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+
+        .fade-image.active {
+            opacity: 1;
+        }
+
+        /* 响应式设计 */
+        @media screen and (max-width: 768px) {
+            .nav-toggle {
+                display: block;
+                position: fixed;
+                top: 10px;
+                right: 20px;
+            }
+
+            nav {
+                flex-direction: row;
+                align-items: center;
+            }
+
+            .nav-links {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                height: 100%;
+                width: 200px;
+                background-color: rgba(10, 25, 47, 0.95);
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 20px;
+                transition: 0.3s;
+            }
+
+            .nav-links.show {
+                right: 0;
+            }
+
+            .logo {
+                margin-left: 20px;
+            }
+
+            #content {
+                padding: 80px 15px 40px 15px;
+                padding-top: 70px; /* 确保内容不被导航栏遮挡 */
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.75rem;
+            }
+
+            p {
+                font-size: 1rem;
+            }
+        }
+
+        @media screen and (max-width: 480px) {
+            .logo img {
+                width: 40px;
+                height: 40px;
+            }
+
+            .logo span {
+                font-size: 1.25rem;
+            }
+
+            .nav-links a {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 粒子背景 -->
+    <div id="particles-js"></div>
+
+    <!-- 导航栏 -->
+    <nav>
+        <div class="logo">
+            <img src="{{ url_for('static', filename='pic/社徽3.png') }}" alt="社徽">
+            <span>南汇中学乐创机器人社</span>
+        </div>
+        <div class="nav-toggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <div class="nav-links">
+            <a href="#" data-page="home" class="active">主页</a>
+            <a href="#" data-page="about">关于我们</a>
+            <a href="#" data-page="activities">活动安排</a>
+            <a href="#" data-page="files">社团文件</a>
+        </div>
+    </nav>
+
+    <!-- 内容区域 -->
+    <div class="container">
+        <div id="content">
+            <!-- 内容将通过 JavaScript 动态加载 -->
+        </div>
+    </div>
+
+    <!-- 底部信息 -->
+    <footer>
+        <div class="contact-info">
+            <p>联系方式：<a href="mailto:daishuge@daishuge.win">daishuge@daishuge.win</a></p>
+            <p>地址：上海市南汇区学海路 南汇中学 4号楼 四楼机器人教室</p>
+        </div>
+    </footer>
+
+    <!-- 内联脚本 -->
+    <script>
+        // 加载粒子背景
+        particlesJS('particles-js', {
+            "particles": {
+                "number": {
+                    "value": 80,
+                    "density": {
+                        "enable": true,
+                        "value_area": 800
+                    }
+                },
+                "color": {
+                    "value": "#64ffda"
+                },
+                "shape": {
+                    "type": "circle"
+                },
+                "opacity": {
+                    "value": 0.5,
+                    "random": false
+                },
+                "size": {
+                    "value": 3,
+                    "random": true
+                },
+                "line_linked": {
+                    "enable": true,
+                    "distance": 150,
+                    "color": "#64ffda",
+                    "opacity": 0.4,
+                    "width": 1
+                },
+                "move": {
+                    "enable": true,
+                    "speed": 6,
+                    "direction": "none",
+                    "random": false,
+                    "straight": false,
+                    "out_mode": "out",
+                    "bounce": false
+                }
+            },
+            "interactivity": {
+                "detect_on": "canvas",
+                "events": {
+                    "onhover": {
+                        "enable": true,
+                        "mode": "repulse"
+                    },
+                    "onclick": {
+                        "enable": true,
+                        "mode": "push"
+                    },
+                    "resize": true
+                }
+            },
+            "retina_detect": true
+        });
+
+        // 导航栏交互和内容加载
+        document.addEventListener('DOMContentLoaded', function() {
+            const navToggle = document.querySelector('.nav-toggle');
+            const navLinks = document.querySelector('.nav-links');
+
+            // 汉堡菜单点击事件
+            navToggle.addEventListener('click', () => {
+                navLinks.classList.toggle('show');
+            });
+
+            const pages = {
+                home: {
+                    render: function() {
+                        const contentDiv = document.getElementById('content');
+                        contentDiv.innerHTML = `
+                            <div style="
+                                height: 80vh;
+                                display: flex;
+                                justify-content: center;
+                                align-items: center;
+                                text-align: center;
+                            ">
+                                <h1 style="
+                                    font-size: 4rem;
+                                    font-weight: 700;
+                                    text-shadow: 0 0 10px rgba(100, 255, 218, 0.3);
+                                    animation: fadeInUp 1s ease-out;
+                                ">乐创机器人社：一起探索未来</h1>
+                            </div>
+                            <style>
+                                @keyframes fadeInUp {
+                                    from {
+                                        opacity: 0;
+                                        transform: translateY(20px);
+                                    }
+                                    to {
+                                        opacity: 1;
+                                        transform: translateY(0);
+                                    }
+                                }
+
+                                @media screen and (max-width: 768px) {
+                                    h1 {
+                                        font-size: 2.5rem !important;
+                                    }
+                                }
+                            </style>
+                        `;
+                    }
+                },
+                about: {
+                    render: function() {
+                        const contentDiv = document.getElementById('content');
+                        contentDiv.innerHTML = `
+                            <h1>关于我们</h1>
+                            <p>我们是上海南汇中学乐创机器人社，由一群热爱发明创造的人组成。</p>
+                            <p>我们不看重你的长相，性别，成绩，只看重你的热情和创造力。</p>
+                            <br><h2>社团风采</h2>
+                            <div id="fc">
+                                <div class="image-container">
+                                    <div class="image-wrapper">
+                                        <img class="fade-image current-image" alt="社团风采">
+                                        <img class="fade-image next-image" alt="社团风采">
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        loadInitialImage();
+                        startImageRefresh();
+                        console.log('关于我们页面已加载');
+                    }
+                },
+                activities: {
+                    render: function() {
+                        const contentDiv = document.getElementById('content');
+                        contentDiv.innerHTML = `
+                            <h1>活动安排</h1>
+                            <h2>基础项目（必修）</h2>
+                            <ul>
+                                <li>搭建小车，初步编程：变速直行、走弧线、原地转向</li>
+                                <li>触动传感器应用：按下按钮，机器人做出不同动作</li>
+                                <li>陀螺仪传感器应用：走出正方形</li>
+                                <li>超声波/红外传感器应用：自动跟随，保持15cm距离</li>
+                                <li>颜色传感器应用：自动识别多种颜色，颜色密码锁</li>
+                                <li>基础巡线原理实践：自主巡线</li>
+                            </ul>
+
+                            <h2>进阶项目（选修）</h2>
+                            <ul>
+                                <li>乐高枪械制作：打造可发射的枪械模型</li>
+                                <li>EV3软件项目实践</li>
+                                <li>多边形绘制（陀螺仪应用）</li>
+                                <li>迷宫小车（超声波/红外应用）</li>
+                                <li>按键控变速风扇（触动+结构）</li>
+                                <li>物流搬运机器人（多传感器综合应用）</li>
+                                <li>自瞄炮塔（结构+算法+多传感器综合）</li>
+                            </ul>
+
+                            <h2>竞赛活动</h2>
+                            <h3>RMYC机甲大师空地协同对抗赛</h3>
+                            <p>6人团队，进行机器人FPS对抗，涉及人工智能、结构改装、战术指挥</p>
+                            <p>编程语言：Python、Scratch</p>
+                            <p>分工：程序组3人、结构组3人（含步兵、工程兵、飞行员）</p>
+                            <p>参考网址：</p><a href="https://www.robomaster.com/zh-CN" target="_blank">大疆官网</a>
+                            <p>本社团比赛纪录片：↓</p>
+                            <iframe src="//player.bilibili.com/player.html?isOutside=true&aid=112681050705239&bvid=BV1Tv3TepEKP&cid=26088835607&p=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"></iframe>
+                            <h3>视觉竞速赛</h3>
+                            <p>4人分2队，使用摄像头实现自动巡线竞速</p>
+                            <p>编程语言：C</p>
+
+                            <h3>农业巡检赛</h3>
+                            <p>2人一队，基于颜色指示的自主移动任务</p>
+                            <p>编程语言：C</p>
+
+                            <h2>课程安排</h2>
+                            <p>每节课：10分钟理论讲解 + 30分钟实践操作 + 小组讨论</p>
+                            <p>设有速度榜和成就榜，记录小组完成项目的时间和数量</p>
+                        `;
+                    }
+                },
+                files: {
+                    render: function() {
+                        const contentDiv = document.getElementById('content');
+                        contentDiv.innerHTML = `
+                            <h1>社团文件</h1>
+                            <p>在此您可以下载社团的相关文件和资料：</p>
+                            <p><a href="https://alist.daishuge.win" target="_blank">点击这里访问文件下载页面</a></p>
+                            <p>账号：nhzx<br>密码：000000</p>
+                        `;
+                        console.log('社团文件页面已加载');
+                    }
+                }
+            };
+
+            const navLinksItems = document.querySelectorAll('.nav-links a');
+
+            navLinksItems.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const page = this.getAttribute('data-page');
+                    loadContent(page);
+                    updateActiveLink(this);
+                    // 移动设备上点击后收起导航菜单
+                    if (window.innerWidth <= 768) {
+                        navLinks.classList.remove('show');
+                    }
+                });
+            });
+
+            function loadContent(page) {
+                const contentDiv = document.getElementById('content');
+                contentDiv.classList.add('fade-out');
+
+                setTimeout(() => {
+                    const pageObj = pages[page];
+                    if (pageObj && typeof pageObj.render === 'function') {
+                        contentDiv.innerHTML = '';
+                        pageObj.render();
+                    } else {
+                        contentDiv.innerHTML = '<p>内容加载失败。</p>';
+                    }
+
+                    // 滚动到页面顶部
+                    window.scrollTo(0, 0);
+
+                    contentDiv.classList.remove('fade-out');
+                    contentDiv.classList.add('fade-in');
+
+                    setTimeout(() => {
+                        contentDiv.classList.remove('fade-in');
+                    }, 500);
+                }, 500);
+            }
+
+            function updateActiveLink(activeLink) {
+                navLinksItems.forEach(link => {
+                    link.classList.remove('active');
+                });
+                activeLink.classList.add('active');
+            }
+
+            // 图片预加载和过渡逻辑
+            let currentImageElement;
+            let nextImageElement;
+
+            function loadInitialImage() {
+                currentImageElement = document.querySelector('.current-image');
+                nextImageElement = document.querySelector('.next-image');
+                fetch('/random_pic')
+                    .then(response => response.blob())
+                    .then(imageBlob => {
+                        const imageUrl = URL.createObjectURL(imageBlob);
+                        currentImageElement.src = imageUrl;
+                        currentImageElement.classList.add('active');
+                    })
+                    .catch(error => {
+                        console.error('加载初始图片失败:', error);
+                    });
+            }
+
+            function preloadAndSwapImages() {
+                fetch('/random_pic')
+                    .then(response => response.blob())
+                    .then(imageBlob => {
+                        const imageUrl = URL.createObjectURL(imageBlob);
+                        nextImageElement.src = imageUrl;
+                        nextImageElement.onload = function() {
+                            nextImageElement.classList.add('active');
+                            currentImageElement.classList.remove('active');
+
+                            // 在过渡结束后交换图片元素
+                            setTimeout(() => {
+                                const temp = currentImageElement;
+                                currentImageElement = nextImageElement;
+                                nextImageElement = temp;
+                                nextImageElement.classList.remove('active');
+                            }, 1000); // 确保时间与CSS过渡时间一致
+                        };
+                    })
+                    .catch(error => {
+                        console.error('加载图片失败:', error);
+                    });
+            }
+
+            function startImageRefresh() {
+                setInterval(preloadAndSwapImages, 5000); // 每5秒刷新一次图片
+            }
+
+            // 页面初始加载
+            loadContent('home');
+        });
+    </script>
+</body>
+</html>
